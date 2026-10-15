@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ article.title }} — Arcania Wiki</title>
+    </head>
+    <body>
+        <header>
+            <h1><a href="{% url 'arcaniawiki:article_list' %}">ArcaniaWiki</a></h1>
+        </header>
+
+        <main>
+            <article>
+                <h2>{{ article.title }}</h2>
+
+                <p>
+                    Created at: {{ article.created_at|date:"d.m.Y H:i" }}
+                </p>
+
+                <p>
+                    Last updated: {{ article.updated_at|date:"d.m.Y H:i" }}
+                </p>
+
+                <div>
+                    {{ article.content|linebreaks }}
+                </div>
+            </article>
+
+            <p>
+                <a href="{% url 'arcaniawiki:article_list' %}">
+                    Back to article list
+                </a>
+            </p>
+        </main>
+    </body>
+</html>

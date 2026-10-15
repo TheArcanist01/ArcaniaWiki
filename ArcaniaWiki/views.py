@@ -1,5 +1,18 @@
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from .models import Article
 
-def index(request):
-    return HttpResponse("<h1>Arcania Wiki</h1><p>A database for the Borderlands 2 Arcania mod</p>")
+def article_list(request):
+    articles = Article.objects.order_by("-created_at")
+    return render(
+        request,
+        "arcaniawiki/article_list.html",
+        {"articles":articles},
+    )
 
+def article_detail(request, slug):
+    article = get_object_or_404(Article, slug=slug)
+    return render(
+        request,
+        "arcaniawiki/article_detail.html",
+        {"article": article},
+    )
