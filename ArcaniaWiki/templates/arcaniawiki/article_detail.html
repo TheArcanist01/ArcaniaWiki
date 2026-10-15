@@ -24,7 +24,7 @@
         </header>
 
         <div class="article-content">
-            {{ article.content|linebreaks }}
+            {{ rendered_content|safe }}
         </div>
     </article>
 {% endblock %}

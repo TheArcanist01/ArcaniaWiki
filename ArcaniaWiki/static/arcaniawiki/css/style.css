@@ -157,4 +157,51 @@ h1 {
     .article-card {
         padding: 16px;
     }
+
+    
+}
+
+.search-form {
+    margin-bottom: 32px;
+}
+
+.search-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.search-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.search-controls input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #cbd2dc;
+    border-radius: 8px;
+    font: inherit;
+    background: white;
+}
+
+.search-controls button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #2457a7;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+.search-controls button:hover {
+    background: #1c4382;
+}
+
+@media (max-width: 480px) {
+    .search-controls {
+        flex-direction: column;
+    }
 }

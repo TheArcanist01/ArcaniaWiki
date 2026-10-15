@@ -11,9 +11,27 @@
         </p>
     </section>
 
+    <form method="get" class="search-form">
+        <label for="article-search">Search</label>
+
+        <div class="search-controls">
+            <input
+                id="article-search"
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="funi gun type shit"
+            >
+
+            <button type="submit">Search</button>
+        </div>
+</form>
+
     <section class="article-list">
         <h2>Articles</h2>
-
+        {% if query %}
+            <p>Search results for: <strong>{{ query }}</strong></p>
+        {% endif %}
         {% for article in articles %}
             <article class="article-card">
                 <h3>
@@ -28,7 +46,11 @@
                 </p>
             </article>
         {% empty %}
-            <p>No articles found.</p>
+            {% if query %}
+                <p>No results.</p>
+            {% else %}
+                <p>No articles found.</p>
+            {% endif %}
         {% endfor %}
     </section>
 {% endblock %}
