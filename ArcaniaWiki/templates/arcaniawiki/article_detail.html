@@ -1,37 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ article.title }} — Arcania Wiki</title>
-    </head>
-    <body>
-        <header>
-            <h1><a href="{% url 'arcaniawiki:article_list' %}">ArcaniaWiki</a></h1>
+
+{% extends "arcaniawiki/base.html" %}
+
+{% block title %}{{ article.title }} — Arcania Wiki{% endblock %}
+
+{% block content %}
+    <article class="article-detail">
+        <nav class="breadcrumbs">
+            <a href="{% url 'arcaniawiki:article_list' %}">
+                Documentation
+            </a>
+            <span>/</span>
+            <span>{{ article.title }}</span>
+        </nav>
+
+        <header class="article-heading">
+            <h1>{{ article.title }}</h1>
+
+            <p class="article-meta">
+                Created at: {{ article.created_at|date:"d.m.Y H:i" }}
+                <span>·</span>
+                Updated at: {{ article.updated_at|date:"d.m.Y H:i" }}
+            </p>
         </header>
 
-        <main>
-            <article>
-                <h2>{{ article.title }}</h2>
-
-                <p>
-                    Created at: {{ article.created_at|date:"d.m.Y H:i" }}
-                </p>
-
-                <p>
-                    Last updated: {{ article.updated_at|date:"d.m.Y H:i" }}
-                </p>
-
-                <div>
-                    {{ article.content|linebreaks }}
-                </div>
-            </article>
-
-            <p>
-                <a href="{% url 'arcaniawiki:article_list' %}">
-                    Back to article list
-                </a>
-            </p>
-        </main>
-    </body>
-</html>
+        <div class="article-content">
+            {{ article.content|linebreaks }}
+        </div>
+    </article>
+{% endblock %}

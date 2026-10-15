@@ -1,32 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device_width, initial-scale=1.0">
-        <title>Arcania Wiki</title>
-    </head>
-    <body>
-        <header>
-            <h1>Borderlands 2 Arcania</h1>
-            <p>Documentation</p>
-        </header>
 
-        <main>
-            <h2>Articles</h2>
+{% extends "arcaniawiki/base.html" %}
 
-            {% for article in articles %}
-                <article>
-                    <h3>
-                        <a href="{% url 'arcaniawiki:article_detail' slug=article.slug %}">
-                            {{ article.title }}
-                        </a>
-                    </h3>
+{% block title %}Arcania Wiki - Articles{% endblock %}
 
-                    <p>Last updated: {{ article.updated_at|date:"d.m.Y H:i" }}</p>
-                </article>
-            {% empty %}
-                <p>No articles.</p>
-            {% endfor %}
-        </main>
-    </body>
-</html>
+{% block content %}
+    <section class="page-heading">
+        <h1>Documentation</h1>
+        <p class="lead">
+            Browse Arcania content.
+        </p>
+    </section>
+
+    <section class="article-list">
+        <h2>Articles</h2>
+
+        {% for article in articles %}
+            <article class="article-card">
+                <h3>
+                    <a href="{% url 'arcaniawiki:article_detail' slug=article.slug %}">
+                        {{ article.title }}
+                    </a>
+                </h3>
+
+                <p class="article-meta">
+                    Last updated:
+                    {{ article.updated_at|date:"d.m.Y H:i" }}
+                </p>
+            </article>
+        {% empty %}
+            <p>No articles found.</p>
+        {% endfor %}
+    </section>
+{% endblock %}
