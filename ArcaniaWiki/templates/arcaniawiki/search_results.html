@@ -1,0 +1,78 @@
+{% extends "arcaniawiki/base.html" %}
+
+{% block title %}{% if query %}“{{ query }}” — {% endif %}Search | Arcania Wiki{% endblock %}
+
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'arcaniawiki:home' %}">Home</a>
+    <span>/</span>
+    <span>Search</span>
+</nav>
+
+<header class="page-header">
+    <p class="eyebrow">Search</p>
+    {% if query %}
+        <h1>Results for “{{ query }}”</h1>
+        <p class="page-description">
+            {{ items|length }} item{{ items|length|pluralize }} and
+            {{ enemies|length }} enem{{ enemies|length|pluralize:"y,ies" }} found.
+        </p>
+    {% else %}
+        <h1>Search</h1>
+        <p class="page-description">Type an item, drop source, enemy or level name in the search box above.</p>
+    {% endif %}
+</header>
+
+{% if query %}
+    <section class="content-section" aria-labelledby="item-results">
+        <h2 id="item-results">Items</h2>
+        {% if items %}
+            <ul class="result-list">
+                {% for item in items %}
+                    <li class="result-row">
+                        {% if item.list_thumbnail %}
+                            <img class="result-row__image" src="{{ item.list_thumbnail.url }}" alt="" loading="lazy">
+                        {% else %}
+                            <span class="result-row__image result-row__image--empty" aria-hidden="true"></span>
+                        {% endif %}
+                        <div>
+                            <a href="{{ item.get_absolute_url }}"><strong>{{ item.name }}</strong></a>
+                            <p class="result-row__meta">
+                                {{ item.collection_title }} · {{ item.type_label }} ·
+                                <span class="rarity-text--{{ item.rarity }}">{{ item.get_rarity_display }}</span>
+                            </p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted-text">No items found.</p>
+        {% endif %}
+    </section>
+
+    <section class="content-section" aria-labelledby="enemy-results">
+        <h2 id="enemy-results">Enemies</h2>
+        {% if enemies %}
+            <ul class="result-list">
+                {% for enemy in enemies %}
+                    <li class="result-row">
+                        {% if enemy.image %}
+                            <img class="result-row__image" src="{{ enemy.image.url }}" alt="" loading="lazy">
+                        {% else %}
+                            <span class="result-row__image result-row__image--empty" aria-hidden="true"></span>
+                        {% endif %}
+                        <div>
+                            <a href="{{ enemy.get_absolute_url }}"><strong>{{ enemy.name }}</strong></a>
+                            <p class="result-row__meta">
+                                {{ enemy.enemy_type }}{% if enemy.level %} · {{ enemy.level.name }}{% endif %}
+                            </p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted-text">No enemies found.</p>
+        {% endif %}
+    </section>
+{% endif %}
+{% endblock %}

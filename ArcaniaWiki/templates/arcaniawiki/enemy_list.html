@@ -1,0 +1,88 @@
+{% extends "arcaniawiki/base.html" %}
+
+{% block title %}Custom Enemies | Arcania Wiki{% endblock %}
+
+{% block main_class %} main-content--wide{% endblock %}
+
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'arcaniawiki:home' %}">Home</a>
+    <span>/</span>
+    <span>Custom Enemies</span>
+</nav>
+
+<header class="page-header">
+    <p class="eyebrow">Enemy database</p>
+    <h1>Custom Enemies</h1>
+</header>
+
+{% if enemies %}
+    {% include "arcaniawiki/_live_filter.html" with target="enemy-table" label="Filter this list" placeholder="Name, enemy type, level, drop..." noun="enemy" noun_plural="enemies" %}
+{% endif %}
+
+<div class="data-table-wrapper">
+    <table class="data-table" id="enemy-table">
+        <thead>
+            {% include "arcaniawiki/_table_header.html" %}
+        </thead>
+        <tbody>
+            {% for enemy in enemies %}
+                <tr data-filter-text="{{ enemy.name }} {{ enemy.enemy_type }} {{ enemy.game_origin.name }} {{ enemy.level.name }}{% if enemy.drop_source %}{% for drop in enemy.drop_source.item_drops.all %} {{ drop.item.name }}{% endfor %}{% endif %}">
+                    {% for column in columns %}
+                        {% if forloop.first %}
+                            <td class="data-table__image-cell data-table__image-cell--wide">
+                                <a href="{{ enemy.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+                                    {% if enemy.image %}
+                                        <img src="{{ enemy.image.url }}" alt="" loading="lazy">
+                                    {% else %}
+                                        <span class="data-table__no-image">No image</span>
+                                    {% endif %}
+                                </a>
+                            </td>
+                        {% elif column.key == "name" %}
+                            <td>
+                                <a class="data-table__title-link" href="{{ enemy.get_absolute_url }}">
+                                    <strong>{{ enemy.name }}</strong>
+                                </a>
+                            </td>
+                        {% elif column.key == "enemy_type" %}
+                            <td>{{ enemy.enemy_type }}</td>
+                        {% elif column.key == "game_origin" %}
+                            <td>{% if enemy.game_origin %}{{ enemy.game_origin.name }}{% else %}<span class="muted-text">Unknown</span>{% endif %}</td>
+                        {% elif column.key == "level" %}
+                            <td>{% if enemy.level %}{{ enemy.level.name }}{% else %}<span class="muted-text">Unknown</span>{% endif %}</td>
+                        {% elif column.key == "drops" %}
+                            <td>
+                                <div class="drop-source-list">
+                                    {% if enemy.drop_source %}
+                                        {% for drop in enemy.drop_source.item_drops.all %}
+                                            <a class="source-tag source-tag--link rarity-text--{{ drop.item.rarity }}" href="{{ drop.item.get_absolute_url }}">{{ drop.item.name }}</a>
+                                        {% empty %}
+                                            <span class="muted-text">No listed drops</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="muted-text">No listed drops</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="{{ columns|length }}" class="data-table__empty">
+                        <strong>No enemies here yet.</strong>
+                        <p>Enemies added through the admin panel will appear here.</p>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr data-filter-empty hidden>
+                <td colspan="{{ columns|length }}" class="data-table__empty">
+                    <strong>No matching enemies.</strong>
+                    <p>Try a different name, enemy type, level or drop.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

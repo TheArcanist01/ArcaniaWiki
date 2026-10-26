@@ -1,37 +1,71 @@
-{% load static %}
+{% load static wiki_extras %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d1117">
+    <title>{% block title %}Arcania Wiki{% endblock %}</title>
+    <link rel="icon" href="{% static 'arcaniawiki/img/favicon.ico' %}" sizes="any">
+    <link rel="icon" type="image/png" href="{% static 'arcaniawiki/img/favicon-32.png' %}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{% static 'arcaniawiki/img/arcania-icon.png' %}" sizes="256x256">
+    <link rel="apple-touch-icon" href="{% static 'arcaniawiki/img/apple-touch-icon.png' %}">
+    <link rel="stylesheet" href="{% versioned_static 'arcaniawiki/css/style.css' %}">
+    <script src="{% versioned_static 'arcaniawiki/js/live-filter.js' %}" defer></script>
+    <script src="{% versioned_static 'arcaniawiki/js/lightbox.js' %}" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="site-brand" href="{% url 'arcaniawiki:home' %}">
+            <img class="site-brand__logo" src="{% static 'arcaniawiki/img/arcania-logo-96.png' %}" alt="" width="44" height="44">
+            <span class="site-brand__text">
+                <strong>Arcania Wiki</strong>
+                <small>by TheArcanist</small>
+            </span>
+        </a>
 
-        <title>{% block title %}Arcania Wiki{% endblock %}</title>
+        <form class="search-form" action="{% url 'arcaniawiki:search' %}" method="get" role="search">
+            <label class="visually-hidden" for="site-search">Search items and enemies</label>
+            <input
+                id="site-search"
+                type="search"
+                name="q"
+                placeholder="Search items and enemies..."
+                value="{% if request.resolver_match.url_name == 'search' %}{{ request.GET.q }}{% endif %}"
+            >
+            <button type="submit">Search</button>
+        </form>
+    </header>
 
-        <link rel="stylesheet" href="{% static 'arcaniawiki/css/style.css' %}">
-    </head>
-    <body>
-        <header class="site-header">
-            <div class="container">
-                <a class="site-logo" href="{% url 'arcaniawiki:article_list' %}">
-                    Arcania Wiki
-                </a>
+    <div class="site-layout">
+        <aside class="sidebar">
+            <p class="sidebar__heading">Navigation</p>
 
-                <nav class="site-nav">
-                    <a href="{% url 'arcaniawiki:article_list' %}">
-                        Main page
-                    </a>
-                </nav>
-            </div>
-        </header>
+            <nav aria-label="Main navigation">
+                {% for group in nav_groups %}
+                    <details class="nav-group"{% if group.open %} open{% endif %}>
+                        <summary>{{ group.title }}</summary>
+                        <ul>
+                            {% for link in group.links %}
+                                <li>
+                                    <a href="{{ link.url }}"{% if link.active %} class="is-active" aria-current="page"{% endif %}>
+                                        {{ link.label }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                {% endfor %}
+            </nav>
+        </aside>
 
-        <main class="container main-content">
+        <main class="main-content{% block main_class %}{% endblock %}">
             {% block content %}{% endblock %}
         </main>
+    </div>
 
-        <footer class="site-footer">
-            <div class="container">
-                <p>Borderlands 2 Arcania mod</p>
-            </div>
-        </footer>
-    </body>
+    <footer class="site-footer">
+        <p>Borderlands 2 Arcania - by TheArcanist</p>
+    </footer>
+</body>
 </html>

@@ -1,0 +1,92 @@
+{% extends "arcaniawiki/base.html" %}
+
+{% block title %}Home | Arcania Wiki{% endblock %}
+
+{% block main_class %} main-content--home{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <p class="eyebrow">BORDERLANDS 2 MOD DATABASE</p>
+    <h1>Borderlands 2 Arcania</h1>
+    <p class="page-description">
+        Arcania is a lightweight overhaul and item pack that aims to improve the Borderlands 2 experience without heavily changing the game's vanilla mechanics. Currently containing 150+ weapons, shields, grenade mods, and relics, each with its unique mechanics.
+    </p>
+    <a
+        class="text-link"
+        href="https://www.nexusmods.com/borderlands2/mods/397"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        Download Borderlands 2 Arcania
+        <span aria-hidden="true">↗</span>
+    </a>
+</div>
+
+<section class="content-section" aria-labelledby="explore-heading">
+    <h2 id="explore-heading">Explore Arcania</h2>
+
+    <div class="category-grid">
+        {% if counts.new_items %}
+            <a class="category-card" href="{% url 'arcaniawiki:item_collection' collection='new-items' %}">
+                <h3>New Items</h3>
+                <p>Explore custom items introduced by Arcania.</p>
+                <span class="category-card__status">{{ counts.new_items }} item{{ counts.new_items|pluralize }}</span>
+            </a>
+        {% endif %}
+
+        {% if counts.vanilla_items %}
+            <a class="category-card" href="{% url 'arcaniawiki:item_collection' collection='vanilla-items' %}">
+                <h3>Vanilla Items</h3>
+                <p>Changes and adjustments to vanilla weapons and gear.</p>
+                <span class="category-card__status">{{ counts.vanilla_items }} item{{ counts.vanilla_items|pluralize }}</span>
+            </a>
+        {% endif %}
+
+        {% if counts.enemies %}
+            <a class="category-card" href="{% url 'arcaniawiki:enemy_list' %}">
+                <h3>Custom Enemies</h3>
+                <p>Brand new bosses introduced by Arcania.</p>
+                <span class="category-card__status">{{ counts.enemies }} enem{{ counts.enemies|pluralize:"y,ies" }}</span>
+            </a>
+        {% endif %}
+
+        {% if counts.balance_changes %}
+            <a class="category-card" href="{% url 'arcaniawiki:article_list' section='balance-changes' %}">
+                <h3>Balance Changes</h3>
+                <p>Changes and adjustments to overall game balance.</p>
+                <span class="category-card__status">{{ counts.balance_changes }} article{{ counts.balance_changes|pluralize }}</span>
+            </a>
+        {% endif %}
+
+        {% if counts.changelogs %}
+            <a class="category-card" href="{% url 'arcaniawiki:article_list' section='changelogs' %}">
+                <h3>Changelogs</h3>
+                <p>Changelogs and version history.</p>
+                <span class="category-card__status">{{ counts.changelogs }} article{{ counts.changelogs|pluralize }}</span>
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="content-section" aria-labelledby="about-heading">
+    <h2 id="about-heading">About Arcania</h2>
+    <p>
+        Arcania development started in July of 2023, when I decided I want to learn Borderlands 2 modding. After figuring out how to add custom items with tools like Command Extensions, I decided to create and publish a weapon pack.
+    </p>
+    <p>
+        The initial version of the mod released in early 2024. At that time, it was just another item pack. The items were poorly balanced, poorly coded, and had ugly skins. :P Version 0.2.0 released about a month later with a few more items, fixes, and drop source changes. At that time, I didn't have a set vision for what I wanted the mod to be - I just knew it was going to be an item pack. I experimented with various things, such as custom rarities for my new gear.
+    </p>
+    <p>
+        0.3.0, released in September 2024, was Arcania's first 'real' version, which included several unique features such as raid boss item sets, more balanced items overall, the first custom enemy, fixes for Salvador, and decluttered item cards, as well as Python scripts for dynamic loot pools and spawns. It was also the time when the mod gained a bit of public attention - mostly because of JoltzDude139's playthrough of it.
+    </p>
+    <p>
+        In May of 2026, more than a year after the previous version, 0.4.0 released. It was the biggest update to the mod to date, and the first version of Arcania that made it more than just an item pack, introducing grenade and relic rebalances. It also added a lot more gear, finished item sets for all the raid bosses, improved skins for all the custom gear, and a bunch more custom enemies. The update set the scope for future releases, which would include rebalances for several other aspects of the game as well as features like general reskins and consistency changes.
+    </p>
+    <p>
+        0.5.0 is the current version. It introduced balance and consistency changes for all vanilla and custom shields. It also changed the development and release cycle of the mod - instead of doing massive updates that cover many different things, the mod will receive smaller, more focused patches.
+    </p>
+    <p>
+        A new update is currently in progress, featuring rebalances, reskins, and consistency fixes for vanilla weapons. While the mod is slowly becoming a pretty large overhaul, I still actively try to keep it as close to vanilla feel as possible.
+    </p>
+</section>
+{% endblock %}

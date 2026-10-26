@@ -1,0 +1,10 @@
+Django==6.1.2
+whitenoise==6.9.0
+Markdown==3.11.2
+nh3==0.3.7
+Pillow==13.0.0
+openpyxl==3.1.5
+
+# tools/extract_item_images.py
+numpy==2.5.3
+scipy==1.18.1

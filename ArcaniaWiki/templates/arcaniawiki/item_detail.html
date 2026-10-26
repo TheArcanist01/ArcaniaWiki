@@ -1,0 +1,170 @@
+{% extends "arcaniawiki/base.html" %}
+{% load wiki_extras %}
+
+{% block title %}{{ item.name }} — {{ item.collection_title }} | Arcania Wiki{% endblock %}
+
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'arcaniawiki:home' %}">Home</a>
+    <span>/</span>
+    <a href="{% url 'arcaniawiki:item_collection' collection=item.collection %}">{{ item.collection_title }}</a>
+    <span>/</span>
+    <a href="{% url 'arcaniawiki:item_list' collection=item.collection type_slug=item.type_slug %}">{{ item.type_title }}</a>
+    <span>/</span>
+    <span>{{ item.name }}</span>
+</nav>
+
+<header class="page-header">
+    <p class="eyebrow">{{ item.collection_title }} · {{ item.get_item_type_display }}</p>
+    <h1>{{ item.name }}</h1>
+</header>
+
+<div class="detail-layout detail-layout--stretch detail-layout--item">
+    <aside class="detail-sidebar">
+        {# Item look (click to open full size) #}
+        {% if item.is_vanilla and item.arcania_image %}
+            <figure class="detail-image">
+                <a href="{{ item.arcania_image.url }}" data-lightbox>
+                    <img src="{{ item.arcania_image.url }}" alt="{{ item.name }} — Arcania look">
+                </a>
+                <figcaption>Arcania look</figcaption>
+            </figure>
+            {% if item.image %}
+                <figure class="detail-image">
+                    <a href="{{ item.image.url }}" data-lightbox>
+                        <img src="{{ item.image.url }}" alt="{{ item.name }} — base game look">
+                    </a>
+                    <figcaption>Base game look</figcaption>
+                </figure>
+            {% endif %}
+        {% elif item.image %}
+            <figure class="detail-image">
+                <a href="{{ item.image.url }}" data-lightbox>
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                </a>
+            </figure>
+        {% else %}
+            <div class="detail-image detail-image--empty">No image available</div>
+        {% endif %}
+
+        {# Stats card with flavor text #}
+        {% if item.stats_image %}
+            <figure class="detail-image detail-image--stats">
+                <a href="{{ item.stats_image.url }}" data-lightbox>
+                    <img src="{{ item.stats_image.url }}" alt="{{ item.name }} — stats card">
+                </a>
+            </figure>
+        {% else %}
+            <div class="detail-image detail-image--empty detail-image--stats">No stats card available</div>
+        {% endif %}
+
+        <section class="panel">
+            <h2>Item Information</h2>
+            <dl class="properties">
+                <div class="properties__row">
+                    <dt>Type</dt>
+                    <dd>{{ item.get_item_type_display }}</dd>
+                </div>
+                {% if item.item_type == "weapon" %}
+                    <div class="properties__row">
+                        <dt>Weapon Type</dt>
+                        <dd>{{ item.get_weapon_type_display|default:"Not specified" }}</dd>
+                    </div>
+                {% endif %}
+                {% if item.item_type == "class_mod" %}
+                    <div class="properties__row">
+                        <dt>Class</dt>
+                        <dd>{{ item.get_character_class_display|default:"Not specified" }}</dd>
+                    </div>
+                {% endif %}
+                {% if item.element_list %}
+                    <div class="properties__row">
+                        <dt>Elements</dt>
+                        <dd class="element-list">
+                            {% for code, label in item.element_list %}
+                                <span class="element-badge element-badge--{{ code }}">{{ label }}</span>
+                            {% endfor %}
+                        </dd>
+                    </div>
+                {% endif %}
+                <div class="properties__row">
+                    <dt>Rarity</dt>
+                    <dd><span class="rarity-badge rarity-badge--{{ item.rarity }}">{{ item.get_rarity_display }}</span></dd>
+                </div>
+                <div class="properties__row">
+                    <dt>Manufacturer</dt>
+                    <dd>{{ item.get_manufacturer_display|default:"—" }}</dd>
+                </div>
+                <div class="properties__row">
+                    <dt>Game / DLC</dt>
+                    <dd>{% if item.game_origin %}{{ item.game_origin.name }}{% else %}Unknown{% endif %}</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="panel">
+            <h2>Drop Sources</h2>
+            {% for source_drop in item.source_drops.all %}
+                {% with source=source_drop.source %}
+                    <div class="drop-row">
+                        <div class="drop-row__source">
+                            {% if source.custom_enemy %}
+                                <a href="{{ source.custom_enemy.get_absolute_url }}"><strong>{{ source.name }}</strong></a>
+                            {% else %}
+                                <strong>{{ source.name }}</strong>
+                            {% endif %}
+                            {% if source.source_type != "other" %}
+                                <span class="source-type source-type--{{ source.source_type }}">{{ source.get_source_type_display }}</span>
+                            {% endif %}
+                        </div>
+                        <span>
+                            {% if source_drop.drop_note %}
+                                {{ source_drop.drop_note }}
+                            {% elif source_drop.drop_chance is not None %}
+                                {{ source_drop.drop_chance|percent }} chance
+                            {% else %}
+                                Chance unknown
+                            {% endif %}
+                        </span>
+                        {% if source_drop.unlocked_by %}
+                            <p class="drop-row__condition">Post completion of: {{ source_drop.unlocked_by.name }}</p>
+                        {% endif %}
+                    </div>
+                {% endwith %}
+            {% empty %}
+                <p class="muted-text">No drop sources have been added yet.</p>
+            {% endfor %}
+        </section>
+    </aside>
+
+    {# Item Effects, Trivia and Changes together fill the height of the left column. #}
+    <div class="detail-main detail-main--fill">
+        <article class="detail-content markdown-body">
+            <h2>Item Effects</h2>
+            {% if rendered_content %}
+                {{ rendered_content|safe }}
+            {% else %}
+                <p class="muted-text">Information about this item has not been added yet.</p>
+            {% endif %}
+        </article>
+
+        <section class="detail-content markdown-body">
+            <h2>Trivia</h2>
+            {% if rendered_trivia %}
+                {{ rendered_trivia|safe }}
+            {% else %}
+                <p class="muted-text">No trivia has been added yet.</p>
+            {% endif %}
+        </section>
+
+        <section class="detail-content markdown-body">
+            <h2>Changes</h2>
+            {% if rendered_changes %}
+                {{ rendered_changes|safe }}
+            {% else %}
+                <p class="muted-text">No changes have been recorded yet.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

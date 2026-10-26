@@ -1,56 +1,43 @@
-
 {% extends "arcaniawiki/base.html" %}
 
-{% block title %}Arcania Wiki - Articles{% endblock %}
+{% block title %}{{ section_title }} | Arcania Wiki{% endblock %}
 
 {% block content %}
-    <section class="page-heading">
-        <h1>Documentation</h1>
-        <p class="lead">
-            Browse Arcania content.
-        </p>
-    </section>
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'arcaniawiki:home' %}">Home</a>
+    <span>/</span>
+    <span>{{ section_title }}</span>
+</nav>
 
-    <form method="get" class="search-form">
-        <label for="article-search">Search</label>
+<header class="page-header">
+    <p class="eyebrow">Updates</p>
+    <h1>{{ section_title }}</h1>
+</header>
 
-        <div class="search-controls">
-            <input
-                id="article-search"
-                type="search"
-                name="q"
-                value="{{ query }}"
-                placeholder="funi gun type shit"
-            >
+{% if articles %}
+    {% include "arcaniawiki/_live_filter.html" with target="article-list" label="Search this page" placeholder="Search titles and text..." noun="article" noun_plural="articles" %}
+{% endif %}
 
-            <button type="submit">Search</button>
+<div class="article-list" id="article-list">
+    {% for article in articles %}
+        <article class="article-card" data-filter-text="{{ article.title }} {{ article.plain_text }}">
+            <h2><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h2>
+            <p class="article-meta">
+                Updated {{ article.updated_at|date:"j M Y" }}
+                {% if article.updated_at|date:"Ymd" != article.created_at|date:"Ymd" %}
+                    <span aria-hidden="true">·</span> Added {{ article.created_at|date:"j M Y" }}
+                {% endif %}
+            </p>
+        </article>
+    {% empty %}
+        <div class="empty-state">
+            <strong>No articles here yet.</strong>
+            <p>Articles added through the admin panel will appear here.</p>
         </div>
-</form>
-
-    <section class="article-list">
-        <h2>Articles</h2>
-        {% if query %}
-            <p>Search results for: <strong>{{ query }}</strong></p>
-        {% endif %}
-        {% for article in articles %}
-            <article class="article-card">
-                <h3>
-                    <a href="{% url 'arcaniawiki:article_detail' slug=article.slug %}">
-                        {{ article.title }}
-                    </a>
-                </h3>
-
-                <p class="article-meta">
-                    Last updated:
-                    {{ article.updated_at|date:"d.m.Y H:i" }}
-                </p>
-            </article>
-        {% empty %}
-            {% if query %}
-                <p>No results.</p>
-            {% else %}
-                <p>No articles found.</p>
-            {% endif %}
-        {% endfor %}
-    </section>
+    {% endfor %}
+    <div class="empty-state" data-filter-empty hidden>
+        <strong>No matching articles.</strong>
+        <p>Try different words.</p>
+    </div>
+</div>
 {% endblock %}

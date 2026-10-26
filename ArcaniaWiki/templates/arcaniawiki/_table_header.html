@@ -1,0 +1,15 @@
+<tr>
+    {% for column in columns %}
+        <th scope="col"{% if column.aria_sort %} aria-sort="{{ column.aria_sort }}"{% endif %}{% if forloop.first %} class="data-table__image-heading"{% endif %}>
+            {% if column.sortable %}
+                <a href="{{ column.url }}" data-keep-filter>
+                    {{ column.label }}{% if column.arrow %} <span aria-hidden="true">{{ column.arrow }}</span>{% endif %}
+                </a>
+            {% elif column.label %}
+                {{ column.label }}
+            {% else %}
+                <span class="visually-hidden">Image</span>
+            {% endif %}
+        </th>
+    {% endfor %}
+</tr>

@@ -1,0 +1,14 @@
+{% load wiki_extras %}{% comment %}
+Drop source tag for list pages. Styled by source type: enemy, mission or other.
+Custom Arcania enemies are links to their enemy page; other sources are plain tags.
+Shows the drop note (e.g. "Quest Reward") when there is one, otherwise the drop chance.
+{% endcomment %}{% with enemy=source_drop.source.custom_enemy %}
+<{% if enemy %}a href="{{ enemy.get_absolute_url }}"{% else %}span{% endif %} class="source-tag source-tag--{{ source_drop.source.source_type }}{% if enemy %} source-tag--link{% endif %}"{% if source_drop.source.source_type != "other" %} title="{{ source_drop.source.get_source_type_display }}"{% endif %}>
+    {% if source_drop.source.source_type != "other" %}<span class="visually-hidden">{{ source_drop.source.get_source_type_display }}:</span>{% endif %}
+    {{ source_drop.source.name }}
+    {% if source_drop.drop_note %}
+        <span class="source-tag__chance">{{ source_drop.drop_note }}</span>
+    {% elif source_drop.drop_chance is not None %}
+        <span class="source-tag__chance">{{ source_drop.drop_chance|percent }}</span>
+    {% endif %}
+</{% if enemy %}a{% else %}span{% endif %}>{% endwith %}

@@ -1,0 +1,109 @@
+{% extends "arcaniawiki/base.html" %}
+
+{% block title %}{% if type_title %}{{ type_title }} — {% endif %}{{ collection_title }} | Arcania Wiki{% endblock %}
+
+{% block main_class %} main-content--wide{% endblock %}
+
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'arcaniawiki:home' %}">Home</a>
+    <span>/</span>
+    {% if type_title %}
+        <a href="{% url 'arcaniawiki:item_collection' collection=collection %}">{{ collection_title }}</a>
+        <span>/</span>
+        <span>{{ type_title }}</span>
+    {% else %}
+        <span>{{ collection_title }}</span>
+    {% endif %}
+</nav>
+
+<header class="page-header">
+    <p class="eyebrow">{% if type_title %}{{ collection_title }}{% else %}Item database{% endif %}</p>
+    <h1>{% if type_title %}{{ type_title }}{% else %}All {{ collection_title }}{% endif %}</h1>
+</header>
+
+{% if items %}
+    {% include "arcaniawiki/_live_filter.html" with target="item-table" label="Filter this list" placeholder="Name, rarity, manufacturer, drop source..." noun="item" noun_plural="items" %}
+    <p class="source-legend" aria-hidden="true">
+        Drop sources:
+        <span class="source-tag source-tag--enemy">Enemy</span>
+        <span class="source-tag source-tag--mission">Mission</span>
+        <span class="source-tag source-tag--other">Other</span>
+    </p>
+{% endif %}
+
+<div class="data-table-wrapper">
+    <table class="data-table" id="item-table">
+        <thead>
+            {% include "arcaniawiki/_table_header.html" %}
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr data-filter-text="{{ item.name }} {{ item.type_label }} {{ item.get_rarity_display }} {{ item.get_manufacturer_display }} {{ item.get_character_class_display }} {{ item.game_origin.name }}{% for source_drop in item.source_drops.all %} {{ source_drop.source.name }} {{ source_drop.drop_note }}{% endfor %}">
+                    {% for column in columns %}
+                        {% if forloop.first %}
+                            <td class="data-table__image-cell">
+                                <a href="{{ item.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+                                    {% if item.list_thumbnail %}
+                                        <img src="{{ item.list_thumbnail.url }}" alt="" loading="lazy">
+                                    {% else %}
+                                        <span class="data-table__no-image">No image</span>
+                                    {% endif %}
+                                </a>
+                            </td>
+                        {% elif column.key == "name" %}
+                            <td>
+                                <a class="data-table__title-link" href="{{ item.get_absolute_url }}">
+                                    <strong>{{ item.name }}</strong>
+                                </a>
+                            </td>
+                        {% elif column.key == "type" %}
+                            <td>{{ item.type_label }}</td>
+                        {% elif column.key == "weapon_type" %}
+                            <td>{{ item.get_weapon_type_display|default:"—" }}</td>
+                        {% elif column.key == "class" %}
+                            <td>{{ item.get_character_class_display|default:"—" }}</td>
+                        {% elif column.key == "rarity" %}
+                            <td>
+                                <span class="rarity-badge rarity-badge--{{ item.rarity }}">{{ item.get_rarity_display }}</span>
+                            </td>
+                        {% elif column.key == "manufacturer" %}
+                            <td>{{ item.get_manufacturer_display|default:"—" }}</td>
+                        {% elif column.key == "game_origin" %}
+                            <td>{% if item.game_origin %}{{ item.game_origin.name }}{% else %}<span class="muted-text">Unknown</span>{% endif %}</td>
+                        {% elif column.key == "sources" %}
+                            <td>
+                                <div class="drop-source-list">
+                                    {% for source_drop in item.source_drops.all %}
+                                        {% include "arcaniawiki/_drop_source.html" %}
+                                    {% empty %}
+                                        <span class="muted-text">No listed sources</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="{{ columns|length }}" class="data-table__empty">
+                        {% if is_class_mods and collection == "new-items" %}
+                            <strong>Arcania does not add class mods yet.</strong>
+                            <p>They are planned for a future update.</p>
+                        {% else %}
+                            <strong>No items here yet.</strong>
+                            <p>Items added through the admin panel will appear here.</p>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr data-filter-empty hidden>
+                <td colspan="{{ columns|length }}" class="data-table__empty">
+                    <strong>No matching items.</strong>
+                    <p>Try a different name, rarity or drop source.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

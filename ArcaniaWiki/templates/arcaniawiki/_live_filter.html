@@ -1,0 +1,20 @@
+{% comment %}
+Real-time filter for a list on the current page.
+Params: target (id of the element holding the [data-filter-text] rows),
+        label, placeholder, noun, noun_plural.
+{% endcomment %}
+<div class="live-filter">
+    <label for="live-filter-{{ target }}">{{ label }}</label>
+    <div class="live-filter__controls">
+        <input
+            id="live-filter-{{ target }}"
+            type="search"
+            placeholder="{{ placeholder }}"
+            autocomplete="off"
+            data-live-filter="#{{ target }}"
+            data-noun="{{ noun }}"
+            data-noun-plural="{{ noun_plural }}"
+        >
+        <span class="live-filter__count" data-live-filter-count aria-live="polite"></span>
+    </div>
+</div>
